@@ -54,6 +54,7 @@ or_integration_tests(
     virtual_clock_latency
   PASSFAIL_TESTS
     dangling_clock_inverter
+    delay_balanced_flag
     dont_touch_sink
     dont_touch_skipped_net
     dont_touch_timing_buffer
@@ -109,3 +110,32 @@ gtest_discover_tests(TestDelayBufList
 )
 
 add_dependencies(build_and_test TestDelayBufList)
+
+add_executable(TestDelayBalanced cpp/TestDelayBalanced.cc)
+target_include_directories(TestDelayBalanced
+  PUBLIC
+    ${OPENROAD_HOME}/src/cts/src
+)
+
+target_link_libraries(TestDelayBalanced
+    GTest::gtest
+    GTest::gtest_main
+    cts_lib
+    utl_lib
+    dbSta_lib
+    est_lib
+    rsz_lib
+    grt_lib
+    dpl_lib
+    stt_lib
+    OpenSTA
+    odb
+    tst_integrated_fixture
+    ${TCL_LIBRARY}
+)
+
+gtest_discover_tests(TestDelayBalanced
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/..
+)
+
+add_dependencies(build_and_test TestDelayBalanced)

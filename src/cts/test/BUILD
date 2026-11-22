@@ -62,6 +62,7 @@ COMPULSORY_TESTS = [
 # From CMakeLists.txt or_integration_tests(PASSFAIL_TESTS
 PASSFAIL_TESTS = [
     "dangling_clock_inverter",
+    "delay_balanced_flag",
     "dont_touch_sink",
     "dont_touch_skipped_net",
     "dont_touch_timing_buffer",
@@ -169,6 +170,9 @@ filegroup(
                 "ihp-sg13g2/sg13g2_tech.lef",
                 "ihp-sg13g2/sg13g2_stdcell.lef",
                 "check_max_fanout3.def",
+            ],
+            "delay_balanced_flag": [
+                "16sinks.def",
             ],
             "dont_touch_sink": [
                 "16sinks.def",
@@ -278,6 +282,21 @@ cc_test(
     deps = [
         "//src/cts:cts_impl",
         "//src/utl",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "TestDelayBalanced",
+    srcs = ["cpp/TestDelayBalanced.cc"],
+    data = ["cpp/clock_gate_sinks.v"],
+    deps = [
+        "//src/cts:cts_impl",
+        "//src/est",
+        "//src/odb/src/db",
+        "//src/sta:opensta_lib",
+        "//src/tst:integrated_fixture",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],

@@ -406,7 +406,8 @@ sta::define_cmd_args "clock_tree_synthesis" {[-wire_unit unit]
                                              [-delay_buffer_derate] \
                                              [-library] \
                                              [-repair_clock_nets] \
-                                             [-no_insertion_delay]
+                                             [-no_insertion_delay] \
+                                             [-delay_balanced]
 }
 
 proc clock_tree_synthesis { args } {
@@ -422,7 +423,8 @@ proc clock_tree_synthesis { args } {
           -sink_buffer_max_cap_derate -delay_buffer_derate -library} \
     flags {-post_cts_disable -sink_clustering_enable -balance_levels \
            -obstruction_aware -no_obstruction_aware \
-           -dont_use_dummy_load -repair_clock_nets -no_insertion_delay
+           -dont_use_dummy_load -repair_clock_nets -no_insertion_delay \
+           -delay_balanced
   }
 
   sta::check_argc_eq0 "clock_tree_synthesis" $args
@@ -568,6 +570,10 @@ proc clock_tree_synthesis { args } {
   if { [info exists keys(-apply_ndr)] } {
     set strategy $keys(-apply_ndr)
     cts::set_apply_ndr $strategy
+    if { [info exists flags(-delay_balanced)] && $strategy != "none" } {
+      utl::warn CTS 304 "-apply_ndr is ignored because -delay_balanced builds\
+        its trees without non-default rules."
+    }
   }
 
   if { [info exists flags(-repair_clock_nets)] } {
@@ -575,6 +581,8 @@ proc clock_tree_synthesis { args } {
   } else {
     cts::set_repair_clock_nets false
   }
+
+  cts::set_delay_balanced [info exists flags(-delay_balanced)]
 
   if { [info exists flags(-no_insertion_delay)] } {
     cts::set_insertion_delay false
